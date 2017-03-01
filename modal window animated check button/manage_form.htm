@@ -1,0 +1,94 @@
+<style>
+
+    .request-form {
+        border: 1px solid #2d2d2d;
+        border-radius: 2px;
+        margin-top: 50px;
+    }
+
+    .themes-container {
+
+    }
+
+</style>
+
+<div class="container-fluid">
+{% if microsite.status and microsite.status != "done" %}
+<h4>Your member site is still {{microsite.status|replace({'_' : ' '})}}.</h4>
+{% else %}
+{{form_open({'data-request':'onSettingsEdit','class':'form-horizontal'})}}
+    <div class="row">
+        <h4>General</h4>
+        <br/>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="control-label" for="title">Title:</label>
+                <input type="text" class="form-control" name="title" id="title" value="{{microsite.title}}" placeholder="Enter microsite title">
+            </div>
+        </div>
+        <br/>
+    </div>
+    <br/>
+    <div class="row">
+        <h4>Theme</h4>
+        <br/>
+        <div class="col-lg-12">
+            <div class="themes-container">
+                {% for theme in themes %}
+                <div class="modal fade theme-modal" id="theme-preview-{{theme.id}}">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="background-image: url('{{theme.previewImageBig}}');">
+                            <button type="button" class="close-button" data-dismiss="modal">&times;</button>
+                            <div class="modal-bottom"></div>
+                            <button type="button" id="select-button-{{theme.id}}" class="btn btn-default select-button" onclick="changeButton({{theme.id}});"><canvas width="40" height="30" id="btn-canvas-{{theme.id}}" class="btn-canvas"></canvas><span>Select this theme</span></button>
+                        </div>
+                    </div>
+                </div>
+                <a class="theme-thumbnail-container" data-toggle="modal" href="#theme-preview-{{theme.id}}">
+                    <div id="thumbnail-{{theme.id}}" class="theme-thumbnail" style="background-image: url('{{theme.previewImage}}');">
+                        <div class="currently-selected-label">
+                            <h4>Selected</h4>
+                        </div>
+                        <div class="theme-description">
+                            <h4>{{theme.name}}</h4>
+                            <br/>
+                            <div class="desciption-text">
+                                {{str_limit(theme.description,150)}}
+                            </div>
+                            <button class="btn btn-default">Click to preview</button>
+                        </div>
+                    </div>
+                </a>
+                <!--<label class="radio-inline"><input type="radio" {% if theme.id == microsite.theme_id %} checked {% endif %} name="theme"-->
+                                                   <!--value="{{theme.id}}">{{theme.name}}</label>-->
+                {% endfor %}
+                <input id="theme-hidden-input" name="theme_id" type="hidden" value="{{microsite.theme_id}}"/>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <br/>
+    <div class="row">
+        <h4>Modules</h4>
+        <br/>
+        <div class="col-lg-12">
+            <div class="themes-container">
+                <ul style="padding-left:0;">
+                    {% for plugin in plugins %}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="plugins[]" value="{{plugin.id}}"
+                        {% if plugin.id in memberPlugins %} checked="checked" {% endif %}>{{plugin.name}}</label>
+                    </div>
+                    <span style="padding:0 0 0 30px; font-weight: lighter;">{{plugin.description}}</span>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <br/>
+    </div>
+    <br/>
+    <br/>
+    <button type="submit" class="btn btn-default">Save changes</button>
+</div>
+{{form_close()}}
+{% endif %}
